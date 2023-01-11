@@ -2,44 +2,34 @@ import './App.css';
 import { GiphyFetch } from '@giphy/js-fetch-api'
 import {useState} from 'react'
 
+function getRandomInt(min, max) {
+  min = Math.ceil(min);
+  max = Math.floor(max);
+  return Math.floor(Math.random() * (max - min) + min);
+}
+
 
 const giphy = new GiphyFetch(process.env.REACT_APP_GIPHY_KEY)
 function App() {
-  const [text, setText] = useState('')
   const [results, setResults] = useState([])
-  const [err, setErr] = useState(false)
-
-  const handleInput = (e) => {
-    setText(e.target.value)
-  }
 
   const handleSubmit = (e) => {
-    if(text.length === 0) {
-      
-      //set error state to true
-      setErr(true)
-      return
-    }
-
-    console.log(text)
-
     const apiCall = async () => {
-      const { data: gifs } = await giphy.trending({ limit: 10, offset: 25, rating: 'g' })
-      console.log(gifs)
-      setResults(gifs)
+      const offsetNumber = getRandomInt(0,50);
+      const { data: gifs } = await giphy.trending({ limit: 1, offset: offsetNumber, rating: 'g' })
+      setResults(gifs[0].embed_url)
     }
     
     apiCall()
-    setText('')
-    setErr(false)
 
   }
   
   return (
     <div className="App">
       <h1>Animated Text Generator</h1>
-      <h3>Type text into the form and hit submit</h3>
       <button className='submit-btn' onClick={handleSubmit}>Submit</button>
+      <hr></hr>
+      <iframe title='gif-image' src={results} width="480" height="480" frameBorder="0" className="giphy-embed"></iframe>
     </div>
   );
 }
